@@ -1,0 +1,7 @@
+Encontrar la diferencia entre dos archivos es un problema que es
+bastante conocido y estudiado.
+
+La mayoría de las implementaciones usan el algoritmo de Myers, en este
+ejercicio, haremos que calcule la subsecuencia común más larga entre
+los dos archivos con el algoritmo LCS y use esa información para
+calcular su diferencia.
