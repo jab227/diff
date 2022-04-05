@@ -1,24 +1,54 @@
 use std::ops::{Index, IndexMut};
 
+/// Representa la grilla que contiene los largos de las subsecuencias.
 #[derive(PartialEq, Eq, Debug)]
 pub struct Grid {
+    /// Grilla unidimensional
     grid: Vec<u32>,
+    /// (filas, columnas)
     shape: (usize, usize),
 }
 
 impl Grid {
+    /// .
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use diff::grid::Grid;
+    ///
+    /// assert_eq!(Grid::new(m, n), );
+    /// ```
     pub fn new(m: usize, n: usize) -> Self {
         let grid = vec![0; (m + 1) * (n + 1)];
         let shape = (m + 1, n + 1);
         Grid { grid, shape }
     }
 
-    pub fn shape(&self) -> (usize, usize) {
-        self.shape
-    }
-
+    /// .
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use diff::grid::Grid;
+    ///
+    /// assert_eq!(Grid::new(m, n), );
     pub fn new_from_vec(grid: Vec<u32>, shape: (usize, usize)) -> Self {
         Grid { grid, shape }
+    }
+
+    /// .
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use diff::grid::Grid;
+    ///
+    /// let grid = ;
+    /// assert_eq!(grid.shape(), );
+    /// ```
+    pub fn shape(&self) -> (usize, usize) {
+        self.shape
     }
 }
 
@@ -57,8 +87,7 @@ mod tests {
     #[test]
     fn new_grid() {
         let grid = Grid::new(1, 1);
-        assert_eq!(grid, Grid::new_from_vec(vec![0, 0, 0, 0],(2,2)));
-
+        assert_eq!(grid, Grid::new_from_vec(vec![0, 0, 0, 0], (2, 2)));
     }
 
     #[test]

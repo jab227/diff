@@ -1,5 +1,5 @@
+mod grid;
 pub mod files;
-pub mod grid;
 pub mod lcs;
 
 #[cfg(test)]
