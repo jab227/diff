@@ -5,23 +5,31 @@ pub mod grid;
 pub mod lcs;
 
 /// Se representa la operacion de diff
-pub struct Diff<'a> {
+pub struct Diff {
     /// La grilla resultante de aplicar el algoritmos de LCS.
     grid: Grid,
     /// La secuencia original.
-    original: &'a [String],
+    original: Vec<String>,
     /// La secuencia modificada.
-    modified: &'a [String],
+    modified: Vec<String>,
 }
 
-impl<'a> Diff<'a> {
+impl Diff {
     /// Crea un nuevo Diff, a partir de las dos secuencias de String.
     /// # Arguments
-    /// * `original` y `modified` - Slice de strings entre
-    /// los cuales se realiza el diff.
-    pub fn new(original: &'a [String], modified: &'a [String]) -> Self {
+    ///
+    /// * `path_original` y `path_modified` - Slice de
+    /// string que contienen los paths a los archivos a los cuales se
+    /// le desea realizar el diff.
+    /// # Panics
+    ///
+    /// Si no se encuentran los archivos ejecuta un panic!()
+    
+    pub fn new(path_original: &str, path_modified: &str) -> Self {
+        let original = files::read_file_lines(path_original);
+        let modified = files::read_file_lines(path_modified);
         Diff {
-            grid: lcs::lcs(original, modified),
+            grid: lcs::lcs(&original, &modified),
             original,
             modified,
         }
@@ -31,8 +39,8 @@ impl<'a> Diff<'a> {
     pub fn print_diff(&self) {
         print_diff(
             &self.grid,
-            self.original,
-            self.modified,
+            &self.original,
+            &self.modified,
             self.original.len(),
             self.modified.len(),
         );

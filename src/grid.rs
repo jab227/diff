@@ -1,6 +1,16 @@
 use std::ops::{Index, IndexMut};
 
 /// Representa la grilla que contiene los largos de las subsecuencias.
+/// Se puede acceder al elemento en la fila m, columna n de la
+/// siguiente forma (los indices comienzan de 0).
+///
+/// ```
+/// let grid = diff::grid::Grid::new_from_vec(vec![1,2,3,4], (2,2));
+/// let m = 0;
+/// let n = 1;
+/// let grid_mn = grid[[m,n]];
+/// assert_eq!(grid_mn, 2);
+/// ```
 #[derive(PartialEq, Eq, Debug)]
 pub struct Grid {
     /// Grilla unidimensional
@@ -10,14 +20,22 @@ pub struct Grid {
 }
 
 impl Grid {
-    /// .
+    /// Crea un nuevo Grid con dimensiones (n+1, n+1) y lo inicializa en 0.
     ///
     /// # Examples
     ///
     /// ```
     /// use diff::grid::Grid;
     ///
-    /// assert_eq!(Grid::new(m, n), );
+    /// let mut grid = Grid::new(1, 1);
+    ///
+    /// grid[[0, 0]] = 1;
+    /// grid[[0, 1]] = 2;
+    /// grid[[1, 0]] = 3;
+    /// grid[[1, 1]] = 4;
+    ///
+    /// assert_eq!(grid, Grid::new_from_vec(vec![1, 2, 3, 4], (2, 2)));
+    /// assert_eq!(Grid::new(m, n), grid:: );
     /// ```
     pub fn new(m: usize, n: usize) -> Self {
         let grid = vec![0; (m + 1) * (n + 1)];
@@ -25,7 +43,13 @@ impl Grid {
         Grid { grid, shape }
     }
 
-    /// .
+    /// Crea un nueva grilla a partir de un vector existente con la forma especificada.
+    ///
+    /// # Arguments
+    ///
+    /// * grid: vec de u32
+    /// * shape: tupla de dos u32, el producto de los dos elementos tiene que ser igual a la
+    /// longitud del vector
     ///
     /// # Examples
     ///
