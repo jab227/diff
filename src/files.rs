@@ -6,8 +6,8 @@ use std::{
 /// Lee las lineas del archivo de texto especificado en path  y devuelve un vector
 /// de strings con las lineas del archivo.
 ///
-/// # Examples
-/// ```
+/// # Ejemplos 
+/// ```#s
 /// let want = vec![
 ///          "Encontrar la diferencia entre dos archivos es un problema que es",
 ///          "bastante conocido y estudiado.",
@@ -18,7 +18,7 @@ use std::{
 ///          "calcular su diferencia.",
 ///     ];
 ///
-/// use diff::files::read_file_lines;
+/// use crate::files;
 /// let path = "test_lines.txt";
 ///
 /// assert_eq!(read_file_lines(path), want);
@@ -28,6 +28,7 @@ use std::{
 ///
 /// La funcion ejecuta panic!() si ocurre algun error durante
 /// la lectura del archivo.
+/// TODO: Ver que devuelva result y manejarlo
 pub fn read_file_lines(path: &str) -> Vec<String> {
     let fi = match fs::File::open(path) {
         Ok(f) => f,

@@ -1,8 +1,8 @@
-use crate::grid::Grid;
+use crate::grid;
 use std::cmp;
 
-pub fn lcs(x: &[String], y: &[String]) -> Grid {
-    let mut grid = Grid::new(x.len(), y.len());
+pub fn lcs(x: &[String], y: &[String]) -> grid::Grid {
+    let mut grid = grid::Grid::new(x.len(), y.len());
     for (i, sx) in x.iter().enumerate() {
         for (j, sy) in y.iter().enumerate() {
             if sx == sy {
@@ -35,6 +35,6 @@ mod tests {
             1, 2, 3, 3, 3, 3, 0, 1, 2, 3, 3, 3, 4,
         ];
         let result = lcs(&seqx, &seqy);
-        assert_eq!(result, Grid::new_from_vec(want, result.shape()));
+        assert_eq!(result, grid::test_helper::new_grid_from_vec(want, (seqx.len() + 1, seqy.len() + 1)));
     }
 }

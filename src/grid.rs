@@ -1,16 +1,30 @@
 use std::ops::{Index, IndexMut};
 
 /// Representa la grilla que contiene los largos de las subsecuencias.
-/// Se puede acceder al elemento en la fila m, columna n de la
-/// siguiente forma (los indices comienzan de 0).
 ///
+/// # Indices
+///
+/// Los indices comienzan en 0, para acceder al elemento en la fila m,
+/// columna n se usa la siguiente sintaxis:
+///  `grid[[m, n]]`
+/// # Ejemplo
+///
+///
+/// ```#s
+/// let mut grid = grid::Grid::new(1, 1);
+///
+/// grid[[0, 0]] = 1;
+/// grid[[0, 1]] = 2;
+/// grid[[1, 0]] = 3;
+/// grid[[1, 1]] = 4;
+///
+/// assert_eq!(grid[[0,1]],2)
 /// ```
-/// let grid = diff::grid::Grid::new_from_vec(vec![1,2,3,4], (2,2));
-/// let m = 0;
-/// let n = 1;
-/// let grid_mn = grid[[m,n]];
-/// assert_eq!(grid_mn, 2);
-/// ```
+/// # Panics
+///
+/// Se ejecuta panic!() al acceder indices que se encuentren por fuera
+/// de la grilla.
+///
 #[derive(PartialEq, Eq, Debug)]
 pub struct Grid {
     /// Grilla unidimensional
@@ -22,57 +36,27 @@ pub struct Grid {
 impl Grid {
     /// Crea un nuevo Grid con dimensiones (n+1, n+1) y lo inicializa en 0.
     ///
-    /// # Examples
+    /// # Ejemplos
     ///
-    /// ```
-    /// use diff::grid::Grid;
+    /// ```#s
+    /// use diff::grid;
     ///
-    /// let mut grid = Grid::new(1, 1);
+    /// let mut grid = grid::Grid::new(1, 1);
     ///
     /// grid[[0, 0]] = 1;
     /// grid[[0, 1]] = 2;
     /// grid[[1, 0]] = 3;
     /// grid[[1, 1]] = 4;
     ///
-    /// assert_eq!(grid, Grid::new_from_vec(vec![1, 2, 3, 4], (2, 2)));
-    /// assert_eq!(Grid::new(m, n), grid:: );
+    /// assert_eq!(grid[[0, 0]], 1);
+    /// assert_eq!(grid[[0, 1]], 2);
+    /// assert_eq!(grid[[1, 0]], 3);
+    /// assert_eq!(grid[[1, 1]], 4);
     /// ```
     pub fn new(m: usize, n: usize) -> Self {
         let grid = vec![0; (m + 1) * (n + 1)];
         let shape = (m + 1, n + 1);
         Grid { grid, shape }
-    }
-
-    /// Crea un nueva grilla a partir de un vector existente con la forma especificada.
-    ///
-    /// # Arguments
-    ///
-    /// * grid: vec de u32
-    /// * shape: tupla de dos u32, el producto de los dos elementos tiene que ser igual a la
-    /// longitud del vector
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use diff::grid::Grid;
-    ///
-    /// assert_eq!(Grid::new(m, n), );
-    pub fn new_from_vec(grid: Vec<u32>, shape: (usize, usize)) -> Self {
-        Grid { grid, shape }
-    }
-
-    /// .
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use diff::grid::Grid;
-    ///
-    /// let grid = ;
-    /// assert_eq!(grid.shape(), );
-    /// ```
-    pub fn shape(&self) -> (usize, usize) {
-        self.shape
     }
 }
 
@@ -106,12 +90,23 @@ impl IndexMut<[usize; 2]> for Grid {
 }
 
 #[cfg(test)]
+pub mod test_helper {
+    use crate::grid::Grid;
+    pub fn new_grid_from_vec(grid: Vec<u32>, shape: (usize, usize)) -> Grid {
+        Grid { grid, shape }
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]
     fn new_grid() {
         let grid = Grid::new(1, 1);
-        assert_eq!(grid, Grid::new_from_vec(vec![0, 0, 0, 0], (2, 2)));
+        assert_eq!(
+            grid,
+            test_helper::new_grid_from_vec(vec![0, 0, 0, 0], (2, 2))
+        );
     }
 
     #[test]
@@ -122,9 +117,25 @@ mod tests {
         grid[[1, 0]] = 3;
         grid[[1, 1]] = 4;
 
-        assert_eq!(grid, Grid::new_from_vec(vec![1, 2, 3, 4], (2, 2)));
+        assert_eq!(
+            grid,
+            test_helper::new_grid_from_vec(vec![1, 2, 3, 4], (2, 2))
+        );
 
         let new_grid = grid;
         assert_eq!(new_grid[[0, 0]], 1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn panics_when_out_of_bounds_indexes() {
+        let mut grid = Grid::new(1, 1);
+        grid[[0, 0]] = 1;
+        grid[[0, 1]] = 2;
+        grid[[1, 0]] = 3;
+        grid[[1, 1]] = 4;
+
+        let out_of_bounds = grid[[2, 2]];
+        println!("{}", out_of_bounds);
     }
 }
