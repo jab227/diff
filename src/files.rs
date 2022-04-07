@@ -29,13 +29,10 @@ use std::{
 /// La funcion ejecuta panic!() si ocurre algun error durante
 /// la lectura del archivo.
 /// TODO: Ver que devuelva result y manejarlo
-pub fn read_file_lines(path: &str) -> Vec<String> {
-    let fi = match fs::File::open(path) {
-        Ok(f) => f,
-        Err(error) => panic!("Error abriendo archivo: {:?}", error),
-    };
+pub fn read_file_lines(path: &str) -> io::Result<Vec<String>> {
+    let fi = fs::File::open(path)?;
     let reader = io::BufReader::new(fi);
-    reader.lines().collect::<io::Result<Vec<String>>>().unwrap()
+    reader.lines().collect()
 }
 
 #[cfg(test)]
@@ -57,12 +54,6 @@ mod tests {
 
         let got = read_file_lines(path);
 
-        assert_eq!(got, want);
-    }
-
-    #[test]
-    #[should_panic]
-    fn panics_when_some_error_happens() {
-        let _v = read_file_lines("nonexistent_file.txt");
+        assert_eq!(got.unwrap(), want);
     }
 }

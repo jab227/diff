@@ -1,6 +1,13 @@
-use::diffy::diff;
+use ::diffy::diff;
+use std::{process, env};
 
 fn main() {
-    let diff = diff::Diff::new("test_lines.txt", "test_lines_modified.txt");
+    let diff = match diff::Diff::new(env::args()) {
+        Ok(d) => d,
+        Err(err) => {
+            eprintln!("Ocurrio un error: {}", err);
+            process::exit(1);
+        }
+    };
     diff.print_diff();
 }

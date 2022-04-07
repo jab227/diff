@@ -1,7 +1,7 @@
+pub mod diff;
 mod files;
 mod grid;
 mod lcs;
-pub mod diff;
 
 #[cfg(test)]
 mod tests {
