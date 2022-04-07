@@ -86,20 +86,37 @@ fn diff_str(grid: &Grid, x: &[String], y: &[String], i: usize, j: usize, s: &mut
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Write;
+
+    const PATH_ORIGINAL: &'static str = "original.txt";
+    const ORIGINAL_CONTENTS: &'static str = "a\nb\nc\nd\ne";
+    const PATH_MODIFIED: &'static str = "modified.txt";
+    const MODIFIED_CONTENTS: &'static str = "a\nf\nc\n";
+
+    fn create_tmp_file(path: &str, file_contents: &[u8]) {
+        let mut tmp = std::fs::File::create(path).unwrap();
+        tmp.write_all(file_contents).unwrap();
+    }
+
+    fn del_tmp_file(path: &str) {
+        std::fs::remove_file(path).unwrap();
+    }
+
     #[test]
     fn generate_diff_correctly() {
-        let files = [
-            "".into(),
-            "test_lines.txt".into(),
-            "test_lines_modified.txt".into(),
-        ];
+        create_tmp_file(PATH_ORIGINAL, ORIGINAL_CONTENTS.as_bytes());
+        create_tmp_file(PATH_MODIFIED, MODIFIED_CONTENTS.as_bytes());
+
+        let files = ["".into(), PATH_ORIGINAL.into(), PATH_MODIFIED.into()];
+
         let diff = Diff::new(files.into_iter()).unwrap();
 
         let got = diff.diff_str();
-        let want = "< bastante conocido y estudiado.\n\
-		    < \n\
-		    < ejercicio, haremos que calcule la subsecuencia común más larga entre\n\
-		    > \n";
+        let want = "< b\n> f\n< d\n< e\n";
+
+        del_tmp_file(PATH_ORIGINAL);
+        del_tmp_file(PATH_MODIFIED);
+
         assert_eq!(got, want);
     }
 }
