@@ -1,6 +1,15 @@
 use crate::grid;
 use std::cmp;
 
+
+/// Algoritmo *Longest Common Subsequence*. Devuelve la grilla
+/// generada para ambas secuencias, a partir de la cual se puede
+/// recuperar la secuencia comun mas larga.
+///
+/// # Argumentos
+///
+/// Toma como argumentos dos secuencias x e y que son slices de Strings.
+///
 pub fn lcs(x: &[String], y: &[String]) -> grid::Grid {
     let mut grid = grid::Grid::new(x.len(), y.len());
     for (i, sx) in x.iter().enumerate() {

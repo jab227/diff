@@ -9,5 +9,5 @@ fn main() {
             process::exit(1);
         }
     };
-    diff.print_diff();
+    print!("{}",diff);
 }

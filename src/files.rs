@@ -24,11 +24,9 @@ use std::{
 /// assert_eq!(read_file_lines(path), want);
 /// ```
 ///
-/// # Panics
+/// # Errores
+/// La funcion devuelve un Result<Vec<String>, std::io::Error>>
 ///
-/// La funcion ejecuta panic!() si ocurre algun error durante
-/// la lectura del archivo.
-/// TODO: Ver que devuelva result y manejarlo
 pub fn read_file_lines(path: &str) -> io::Result<Vec<String>> {
     let fi = fs::File::open(path)?;
     let reader = io::BufReader::new(fi);

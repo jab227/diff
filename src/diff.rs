@@ -1,4 +1,17 @@
-use std::io::{Error, ErrorKind};
+//! Se implementa la funcionalidad del diff entre dos archivos
+//!
+//! # Ejemplos
+//!
+//! ```
+//! use::diffy::diff::Diff;
+//!
+//!
+//! ```
+//!
+use std::{
+    fmt::Display,
+    io::{Error, ErrorKind},
+};
 
 use crate::{files, grid::Grid, lcs};
 
@@ -14,14 +27,18 @@ pub struct Diff {
 
 impl Diff {
     /// Crea un nuevo Diff, a partir de las dos secuencias de String.
-    /// # Arguments
     ///
-    /// * `path_original` y `path_modified` - Slice de
-    /// string que contienen los paths a los archivos a los cuales se
-    /// le desea realizar el diff.
-    /// # Panics
+    /// # Argumentos
     ///
-    /// Si no se encuentran los archivos ejecuta un panic!()
+    /// * `args` es un iterador sobre strings que debe cumplir con el
+    /// trait `ExactSizeIterator`. Debe ser de largo 3, sino devuelve
+    /// un error; el primer elemento se ignora.
+    ///
+    /// # Errores
+    ///
+    /// Si falla en la lectura de los argumentos o en la lectura de
+    /// los archivos devuelve un error del tipo `std::io::Error`.
+    ///
     pub fn new<I>(mut args: I) -> Result<Self, Error>
     where
         I: ExactSizeIterator<Item = String>,
@@ -51,35 +68,28 @@ impl Diff {
         })
     }
 
-    /// Imprime por stdout el diff entre las dos secuencias.
-    pub fn print_diff(&self) {
-        print!("{}", self.diff_str());
-    }
-
-    fn diff_str(&self) -> String {
-        let mut s = String::new();
-        diff_str(
-            &self.grid,
-            &self.original,
-            &self.modified,
-            self.original.len(),
-            self.modified.len(),
-            &mut s,
-        );
-        s
+    ///
+    ///
+    ///
+    fn diff_str(&self, i: usize, j: usize, s: &mut String) {
+        if i > 0 && j > 0 && self.original[i - 1] == self.modified[j - 1] {
+            self.diff_str(i - 1, j - 1, s)
+        } else if j > 0 && (i == 0 || self.grid[[i, j - 1]] >= self.grid[[i - 1, j]]) {
+            self.diff_str(i, j - 1, s);
+            *s = format!("{}> {}\n", s, self.modified[j - 1]);
+        } else if i > 0 && (j == 0 || self.grid[[i, j - 1]] < self.grid[[i - 1, j]]) {
+            self.diff_str(i - 1, j, s);
+            *s = format!("{}< {}\n", s, self.original[i - 1]);
+        } else {
+        }
     }
 }
 
-fn diff_str(grid: &Grid, x: &[String], y: &[String], i: usize, j: usize, s: &mut String) {
-    if i > 0 && j > 0 && x[i - 1] == y[j - 1] {
-        diff_str(grid, x, y, i - 1, j - 1, s)
-    } else if j > 0 && (i == 0 || grid[[i, j - 1]] >= grid[[i - 1, j]]) {
-        diff_str(grid, x, y, i, j - 1, s);
-        *s = format!("{}> {}\n", s, y[j - 1]);
-    } else if i > 0 && (j == 0 || grid[[i, j - 1]] < grid[[i - 1, j]]) {
-        diff_str(grid, x, y, i - 1, j, s);
-        *s = format!("{}< {}\n", s, x[i - 1]);
-    } else {
+impl Display for Diff {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut s = String::new();
+        self.diff_str(self.original.len(), self.modified.len(), &mut s);
+        write!(f, "{}", s)
     }
 }
 
@@ -90,6 +100,7 @@ mod tests {
 
     const PATH_ORIGINAL: &'static str = "original.txt";
     const ORIGINAL_CONTENTS: &'static str = "a\nb\nc\nd\ne";
+
     const PATH_MODIFIED: &'static str = "modified.txt";
     const MODIFIED_CONTENTS: &'static str = "a\nf\nc\n";
 
@@ -98,7 +109,7 @@ mod tests {
         tmp.write_all(file_contents).unwrap();
     }
 
-    fn del_tmp_file(path: &str) {
+    fn delete_tmp_file(path: &str) {
         std::fs::remove_file(path).unwrap();
     }
 
@@ -111,11 +122,11 @@ mod tests {
 
         let diff = Diff::new(files.into_iter()).unwrap();
 
-        let got = diff.diff_str();
+        let got = format!("{}", diff);
         let want = "< b\n> f\n< d\n< e\n";
 
-        del_tmp_file(PATH_ORIGINAL);
-        del_tmp_file(PATH_MODIFIED);
+        delete_tmp_file(PATH_ORIGINAL);
+        delete_tmp_file(PATH_MODIFIED);
 
         assert_eq!(got, want);
     }
