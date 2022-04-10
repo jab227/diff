@@ -1,13 +1,4 @@
 //! Se implementa la funcionalidad del diff entre dos archivos
-//!
-//! # Ejemplos
-//!
-//! ```
-//! use::diffy::diff::Diff;
-//!
-//!
-//! ```
-//!
 use std::{
     fmt::Display,
     io::{Error, ErrorKind},
@@ -68,8 +59,14 @@ impl Diff {
         })
     }
 
+    /// Metodo recursivo que genera un string que contiene el diff
+    /// entre los dos archivos.
     ///
+    ///# Argumentos
     ///
+    /// * i y j se inicializan con la longitud de las secuencias sobre
+    /// las que se realizara el diff
+    /// * s se debe inicializar con el string vacio.
     ///
     fn diff_str(&self, i: usize, j: usize, s: &mut String) {
         if i > 0 && j > 0 && self.original[i - 1] == self.modified[j - 1] {

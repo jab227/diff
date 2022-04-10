@@ -34,7 +34,7 @@ pub struct Grid {
 }
 
 impl Grid {
-    /// Crea un nuevo Grid con dimensiones (n+1, n+1) y lo inicializa en 0.
+    /// Crea un nuevo Grid con dimensiones (n+1, n+1) y la inicializa en 0.
     ///
     /// # Ejemplos
     ///

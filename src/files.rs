@@ -25,6 +25,7 @@ use std::{
 /// ```
 ///
 /// # Errores
+///
 /// La funcion devuelve un Result<Vec<String>, std::io::Error>>
 ///
 pub fn read_file_lines(path: &str) -> io::Result<Vec<String>> {
