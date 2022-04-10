@@ -1,5 +1,5 @@
 use ::diffy::diff;
-use std::{process, env};
+use std::{env, process};
 
 fn main() {
     let diff = match diff::Diff::new(env::args()) {
@@ -9,5 +9,5 @@ fn main() {
             process::exit(1);
         }
     };
-    print!("{}",diff);
+    print!("{}", diff);
 }
