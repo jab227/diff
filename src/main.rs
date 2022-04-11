@@ -1,13 +1,14 @@
 use ::diffy::diff;
-use std::{env, process};
+use ::std::{env, io};
 
-fn main() {
+fn main() -> Result<(), io::Error> {
     let diff = match diff::Diff::new(env::args()) {
         Ok(d) => d,
         Err(err) => {
             eprintln!("Ocurrio un error: {}", err);
-            process::exit(1);
+            return Err(err);
         }
     };
     print!("{}", diff);
+    Ok(())
 }
