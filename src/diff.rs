@@ -102,25 +102,25 @@ mod tests {
     const MODIFIED_CONTENTS: &'static str = "a\nf\nc\n";
 
     fn create_tmp_file(path: &str, file_contents: &[u8]) {
-        let mut tmp = std::fs::File::create(path).unwrap();
+                let mut tmp = std::fs::File::create(path).unwrap();
         tmp.write_all(file_contents).unwrap();
     }
 
     fn delete_tmp_file(path: &str) {
-        std::fs::remove_file(path).unwrap();
+                       std::fs::remove_file(path).unwrap();
     }
 
     #[test]
     fn generate_diff_correctly() {
         create_tmp_file(PATH_ORIGINAL, ORIGINAL_CONTENTS.as_bytes());
-        create_tmp_file(PATH_MODIFIED, MODIFIED_CONTENTS.as_bytes());
+         create_tmp_file(PATH_MODIFIED, MODIFIED_CONTENTS.as_bytes());
 
         let files = ["".into(), PATH_ORIGINAL.into(), PATH_MODIFIED.into()];
 
-        let diff = Diff::new(files.into_iter()).unwrap();
+              let diff = Diff::new(files.into_iter()).unwrap();
 
         let got = format!("{}", diff);
-        let want = "< b\n> f\n< d\n< e";
+               let want = "< b\n> f\n< d\n< e\n";
 
         delete_tmp_file(PATH_ORIGINAL);
         delete_tmp_file(PATH_MODIFIED);
