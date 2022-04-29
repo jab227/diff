@@ -120,7 +120,7 @@ mod tests {
         let diff = Diff::new(files.into_iter()).unwrap();
 
         let got = format!("{}", diff);
-        let want = "< b\n> f\n< d\n< e\n";
+        let want = "< b\n> f\n< d\n< e";
 
         delete_tmp_file(PATH_ORIGINAL);
         delete_tmp_file(PATH_MODIFIED);
