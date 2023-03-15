@@ -65,27 +65,26 @@ impl Index<[usize; 2]> for Grid {
 
     fn index(&self, index: [usize; 2]) -> &Self::Output {
         let width = self.shape.1;
-        if index[0] >= self.shape.0 || index[1] >= self.shape.1 {
-            panic!(
-                "index out of bounds: the indexes were ({},{}), but the shape of the grid is ({}, {})",
-                index[0], index[1], self.shape.0, self.shape.1
-            )
-        }
-
-        &self.grid[width * index[0] + index[1]]
+        let height = self.shape.0;
+        let length = width * height;
+        let grid = &self.grid[..length];
+        let [first, second] = index;
+        assert!(first < height);
+        assert!(second < width);
+        &grid[width * index[0] + index[1]]
     }
 }
 
 impl IndexMut<[usize; 2]> for Grid {
     fn index_mut(&mut self, index: [usize; 2]) -> &mut Self::Output {
         let width = self.shape.1;
-        if index[0] >= self.shape.0 || index[1] >= self.shape.1 {
-            panic!(
-                "index out of bounds: the indexes were ({},{}), but the shape of the grid is ({}, {})",
-                index[0], index[1], self.shape.0, self.shape.1
-            )
-        }
-        &mut self.grid[width * index[0] + index[1]]
+        let height = self.shape.0;
+        let length = width * height;
+        let grid = &mut self.grid[..length];
+        let [first, second] = index;
+        assert!(first < height);
+        assert!(second < width);
+        &mut grid[width * index[0] + index[1]]
     }
 }
 
