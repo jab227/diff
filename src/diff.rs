@@ -109,14 +109,14 @@ impl DiffReport {
     }
 
     pub fn changed(mut self, s: &str) -> Self {
-        self.0.push_str("\n");
+        self.0.push('\n');
         self.0.push_str(s);
         self.0.push_str(" <");
         self
     }
 
     pub fn added(mut self, s: &str) -> Self {
-        self.0.push_str("\n");
+        self.0.push('\n');
         self.0.push_str(s);
         self.0.push_str(" >");
         self
