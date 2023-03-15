@@ -55,59 +55,6 @@ impl<'a> Diff<'a> {
         });
         report.build()
     }
-    /// Metodo recursivo que genera un string que contiene el diff
-    /// entre los dos archivos.
-    ///
-    ///# Argumentos
-    ///
-    /// * i y j se inicializan con la longitud de las secuencias sobre
-    /// las que se realizara el diff
-    /// * s se debe inicializar con el string vacio.
-    ///
-    #[allow(dead_code)]
-    fn diff_str(&self, i: usize, j: usize, s: &mut String) {
-        if i > 0 && j > 0 && self.original[i - 1] == self.modified[j - 1] {
-            self.diff_str(i - 1, j - 1, s)
-        } else if j > 0 && (i == 0 || self.grid[[i, j - 1]] >= self.grid[[i - 1, j]]) {
-            self.diff_str(i, j - 1, s);
-            *s = format!("{}> {}\n", s, self.modified[j - 1]);
-        } else if i > 0 && (j == 0 || self.grid[[i, j - 1]] < self.grid[[i - 1, j]]) {
-            self.diff_str(i - 1, j, s);
-            *s = format!("{}< {}\n", s, self.original[i - 1]);
-        } else {
-        }
-    }
-
-    #[allow(dead_code)]
-    fn diff_str_iter(&self) -> String {
-        let mut i = self.original.len() as isize;
-        let mut j = self.modified.len() as isize;
-        let original = &self.original[..self.original.len()];
-        let modified = &self.modified[..self.modified.len()];
-        let mut diff = DiffReport::builder();
-
-        while i > 0 || j > 0 {
-            let i_idx = i as usize;
-            let j_idx = j as usize;
-            if i == 0 {
-                diff = diff.added(modified[j_idx - 1]);
-                j -= 1;
-            } else if j == 0 {
-                diff = diff.changed(modified[i_idx - 1]);
-                i -= 1;
-            } else if original[i_idx - 1] == modified[j_idx - 1] {
-                i -= 1;
-                j -= 1;
-            } else if self.grid[[i_idx, j_idx - 1]] >= self.grid[[i_idx - 1, j_idx]] {
-                diff = diff.added(modified[j_idx - 1]);
-                j -= 1;
-            } else {
-                diff = diff.changed(original[i_idx - 1]);
-                i -= 1;
-            }
-        }
-        diff.build()
-    }
 }
 
 struct DiffIterator<'a> {
