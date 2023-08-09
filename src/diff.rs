@@ -1,5 +1,12 @@
 //! Se implementa la funcionalidad del diff entre dos archivos
 
+use std::{
+    fmt,
+    hash::{Hash, Hasher},
+};
+
+use rustc_hash::FxHasher;
+
 use crate::{grid::Grid, lcs};
 
 /// Se representa la operacion de diff
@@ -27,8 +34,26 @@ impl<'a> Diff<'a> {
     /// los archivos devuelve un error del tipo `std::io::Error`.
     ///
     pub fn new(original: &'a [&'a str], modified: &'a [&'a str]) -> Self {
+        let original_hashed = original
+            .iter()
+            .map(|s| {
+                let mut hasher = FxHasher::default();
+                s.hash(&mut hasher);
+                hasher.finish()
+            })
+            .collect::<Vec<_>>();
+
+        let modified_hashed = modified
+            .iter()
+            .map(|s| {
+                let mut hasher = FxHasher::default();
+                s.hash(&mut hasher);
+                hasher.finish()
+            })
+            .collect::<Vec<_>>();
+
         Diff {
-            grid: lcs::lcs(original, modified),
+            grid: lcs::lcs(original_hashed, modified_hashed),
             original,
             modified,
         }
@@ -40,20 +65,6 @@ impl<'a> Diff<'a> {
 
     pub(crate) fn contents(&self) -> (&'a [&'a str], &'a [&'a str]) {
         (self.original, self.modified)
-    }
-
-    pub fn generate_diff(&self) -> String {
-        //        self.diff_str_iter()
-        let i = self.original.len() as isize;
-        let j = self.modified.len() as isize;
-        let it = DiffIterator { diff: self, i, j };
-
-        let report = it.fold(DiffReport::builder(), |acc, c| match c {
-            Changes::Added(s) => acc.added(s),
-            Changes::Changed(s) => acc.changed(s),
-            Changes::Unchanged => acc,
-        });
-        report.build()
     }
 }
 
@@ -101,31 +112,53 @@ impl<'a> Iterator for DiffIterator<'a> {
     }
 }
 
-struct DiffReport(String);
+#[derive(Debug)]
+pub struct DiffReport(String);
+
+impl fmt::Display for DiffReport {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 impl DiffReport {
-    pub fn builder() -> Self {
+    pub fn create(diff: Diff) -> Self {
+        let i = diff.original.len() as isize;
+        let j = diff.modified.len() as isize;
+        let it = DiffIterator { diff: &diff, i, j };
+
+        let mut report = it.fold(DiffReport::builder(), |acc, c| match c {
+            Changes::Added(s) => acc.added(s),
+            Changes::Changed(s) => acc.changed(s),
+            Changes::Unchanged => acc,
+        });
+        report.build();
+        report
+    }
+
+    pub(crate) fn builder() -> Self {
         Self(String::new())
     }
 
-    pub fn changed(mut self, s: &str) -> Self {
+    pub(crate) fn changed(mut self, s: &str) -> Self {
         self.0.push('\n');
         self.0.push_str(s);
         self.0.push_str(" <");
         self
     }
 
-    pub fn added(mut self, s: &str) -> Self {
+    pub(crate) fn added(mut self, s: &str) -> Self {
         self.0.push('\n');
         self.0.push_str(s);
         self.0.push_str(" >");
         self
     }
 
-    pub fn build(self) -> String {
-        self.0.chars().rev().collect()
+    pub(crate) fn build(&mut self) {
+        self.0 = self.0.chars().rev().collect();
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -136,7 +169,8 @@ mod tests {
         let modified_contents: Vec<&str> = vec!["a", "f", "c"];
         let diff = Diff::new(&original_contents, &modified_contents);
 
-        let got = diff.generate_diff();
+        let report = DiffReport::create(diff);
+        let got = format!("{report}");
         let want = "< b\n> f\n< d\n< e\n";
 
         assert_eq!(got, want);
